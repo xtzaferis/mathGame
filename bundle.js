@@ -54,8 +54,100 @@
 	    render: function () {
 	        return React.createElement(
 	            'div',
-	            { className: 'style' },
-	            'Testing the environment'
+	            null,
+	            React.createElement(QuestionFrame, null),
+	            React.createElement(TimeScoreFrame, null),
+	            React.createElement(AnswerFrame, null),
+	            React.createElement(CheckFrame, null),
+	            React.createElement(StartFrame, null)
+	        );
+	    }
+	});
+
+	var QuestionFrame = React.createClass({
+	    displayName: 'QuestionFrame',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'question' },
+	            '7 x 3 + ? = 28'
+	        );
+	    }
+	});
+
+	var TimeScoreFrame = React.createClass({
+	    displayName: 'TimeScoreFrame',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'timeAndScore' },
+	            React.createElement(
+	                'div',
+	                { className: 'time' },
+	                'Time: 60'
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'score' },
+	                'Score: 0'
+	            )
+	        );
+	    }
+	});
+
+	var AnswerFrame = React.createClass({
+	    displayName: 'AnswerFrame',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'answer' },
+	            React.createElement(
+	                'span',
+	                { className: 'elements' },
+	                '3'
+	            ),
+	            React.createElement(
+	                'span',
+	                { className: 'elements' },
+	                '4'
+	            ),
+	            React.createElement(
+	                'span',
+	                { className: 'elements' },
+	                '7'
+	            ),
+	            React.createElement(
+	                'span',
+	                { className: 'elements' },
+	                '1'
+	            )
+	        );
+	    }
+	});
+
+	var CheckFrame = React.createClass({
+	    displayName: 'CheckFrame',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'check' },
+	            'Check'
+	        );
+	    }
+	});
+
+	var StartFrame = React.createClass({
+	    displayName: 'StartFrame',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'start' },
+	            'Start'
 	        );
 	    }
 	});
@@ -19679,8 +19771,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./file.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./file.scss");
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -19698,7 +19790,7 @@
 
 
 	// module
-	exports.push([module.id, ".style {\n  color: orange;\n  font-size: 45px; }\n", ""]);
+	exports.push([module.id, "#app {\n  width: 600px;\n  height: 400px;\n  background-color: #E9EAED;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 100px auto;\n  padding: 40px; }\n\n.question, .answer {\n  width: 425px;\n  height: 150px;\n  line-height: 150px;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 43px;\n  font-weight: bold;\n  font-family: cursive, sans-serif;\n  background: #E5F0FF;\n  text-align: center;\n  float: left; }\n\n.answer {\n  clear: both;\n  margin-top: 40px;\n  margin-bottom: 50px;\n  height: 100px;\n  text-align: inherit;\n  line-height: 100px; }\n\n.timeAndScore {\n  width: 140px;\n  height: 150px;\n  margin-left: 30px;\n  float: left; }\n\n.time, .score {\n  width: 140px;\n  height: 70px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  line-height: 70px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  background: #9EC5D3;\n  color: #7F553F;\n  margin: 0px 7px 12px 0px; }\n\n.check {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 40px 0px 50px 30px;\n  height: 100px;\n  line-height: 100px;\n  float: left; }\n  .check:hover {\n    background: #577dcb; }\n  .check:active {\n    background: #2f436d; }\n\n.start {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  height: 50px;\n  line-height: 50px;\n  clear: both;\n  margin: auto; }\n  .start:hover {\n    background: #577dcb; }\n  .start:active {\n    background: #2f436d; }\n\n.elements {\n  padding: 0px 15px;\n  background: lightgrey;\n  width: 50px;\n  margin-left: 40px;\n  border-radius: 50%;\n  cursor: pointer; }\n  .elements:hover {\n    background: #949494; }\n  .elements:active {\n    background: #bebebe;\n    color: white; }\n", ""]);
 
 	// exports
 

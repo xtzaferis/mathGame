@@ -1,0 +1,132 @@
+@import "variables";
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin borderAndShadow() {
+  -webkit-box-shadow: 4px 4px 4px lightgrey;
+  -moz-box-shadow: 4px 4px 4px lightgrey;
+  -ms-box-shadow: 4px 4px 4px lightgrey;
+  box-shadow: 4px 4px 4px lightgrey;
+  border: solid 1px lightgrey;
+}
+
+@mixin windowsForm() {
+  @include borderAndShadow;
+  font-size: $windowsFrameFontSize;
+  font-weight: bold;
+  font-family: cursive, sans-serif;
+
+  background: #E5F0FF;
+}
+
+@mixin componentForm() {
+  @include borderAndShadow;
+  font-size: $componentFontSize;
+  text-align: center;
+  font-weight: bold;
+}
+
+@mixin buttonForm() {
+  font-size: 22px;
+  text-align: center;
+  font-weight: bold;
+  width: $componentWidth;
+  background: #43609C;
+  color: azure;
+  cursor: pointer;
+  &:hover {
+    background: $buttonBackground * 1.3;
+  }
+  &:active {
+    background: $buttonBackground * 0.7;
+  }
+}
+
+#app {
+  width: $mainWidth;
+  height: $mainHeight;
+  background-color: $mainBackground;
+  @include border-radius(15px);
+  @include borderAndShadow;
+  margin: 100px auto;
+  padding: 40px;
+}
+
+.question {
+  width: $windowsFrameWidth;
+  height: $windowsFrameHeight;
+  line-height: $windowsFrameHeight;
+  @include border-radius(15px);
+  @include windowsForm;
+  text-align: center;
+  float:left;
+}
+
+.answer {
+  @extend .question;
+  clear: both;
+  margin-top: 40px;
+  margin-bottom: 50px;
+  height: $windowsFrameHeight - 50;
+  text-align: inherit;
+  line-height: 100px;
+}
+
+.timeAndScore {
+  width: $componentWidth;
+  height: $windowsFrameHeight;
+  margin-left: 30px;
+  float: left;
+}
+
+.time, .score {
+  width: $componentWidth;
+  height: $componentHeight + 20;
+  @include border-radius(10px);
+  line-height: $componentHeight + 20;
+  @include componentForm;
+  background: $timeScoreBackground;
+  color: $timeScoreColor;
+  margin: 0px 7px 12px 0px;
+}
+
+.check {
+  @include buttonForm;
+  @include border-radius(10px);
+  @include borderAndShadow;
+  margin: 40px 0px 50px 30px;
+  height: $windowsFrameHeight - 50;
+  line-height: $windowsFrameHeight - 50;
+  float: left;
+}
+
+.start {
+  @include buttonForm;
+  @include border-radius(10px);
+  @include borderAndShadow;
+  height: $componentHeight;
+  line-height: $componentHeight;
+  clear: both;
+  margin: auto;
+}
+
+.elements {
+  padding: 0px 15px;
+  background: $elementBackground;
+  &:hover {
+    background: $elementBackground * 0.7;
+  }
+  &:active {
+    background: $elementBackground * 0.9;
+    color: white;
+  }
+  width: 50px;
+  margin-left: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
