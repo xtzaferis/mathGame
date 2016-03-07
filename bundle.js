@@ -51,13 +51,57 @@
 	var Main = React.createClass({
 	    displayName: 'Main',
 
+	    getInitialState: function () {
+	        var questionNum = [],
+	            answerNum = [],
+	            num = Math.floor(Math.random() * 9) + 1;
+
+	        for (var i = 0; i < 3; i++) {
+	            while (questionNum.indexOf(num) >= 0) {
+	                num = Math.floor(Math.random() * 9) + 1;
+	            }
+	            questionNum.push(num);
+	        }
+	        var total = questionNum[0] + questionNum[1] * questionNum[2];
+	        var correctPosition = Math.floor(Math.random() * 4);
+	        answerNum[correctPosition] = total;
+
+	        for (var i = 0; i < 4; i++) {
+
+	            answerNum.push(num);
+	            while (answerNum.indexOf(num) >= 0) {
+	                num = Math.floor(Math.random() * 9) + 1;
+	            }
+	            answerNum.push(num);
+	        }
+	        return {
+	            questionNumbers: questionNum,
+	            answerNumbers: answerNum,
+	            result: total,
+	            selectedNumber: "..."
+	        };
+	    },
+	    selectNumber: function (clickedNumber) {
+	        var selectedNumber = this.state.selectedNumber;
+	        if (selectedNumber !== clickedNumber) {
+	            this.setState({ selectedNumber: clickedNumber });
+	        }
+	    },
+	    unselectNumber: function (clickedNumber) {
+	        this.setState({ selectedNumber: "..." });
+	    },
 	    render: function () {
 	        return React.createElement(
 	            'div',
 	            null,
-	            React.createElement(QuestionFrame, null),
+	            React.createElement(QuestionFrame, { selectedNumber: this.state.selectedNumber,
+	                unselectNumber: this.unselectNumber,
+	                questionNumbers: this.state.questionNumbers,
+	                total: this.state.result }),
 	            React.createElement(TimeScoreFrame, null),
-	            React.createElement(AnswerFrame, null),
+	            React.createElement(AnswerFrame, { selectedNumber: this.state.selectedNumber,
+	                selectNumber: this.selectNumber,
+	                answerNumbers: this.state.answerNumbers }),
 	            React.createElement(CheckFrame, null),
 	            React.createElement(StartFrame, null)
 	        );
@@ -68,10 +112,45 @@
 	    displayName: 'QuestionFrame',
 
 	    render: function () {
+	        var selectedNumber = this.props.selectedNumber;
 	        return React.createElement(
 	            'div',
 	            { className: 'question' },
-	            '7 x 3 + ? = 28'
+	            React.createElement(
+	                'span',
+	                null,
+	                this.props.questionNumbers[0]
+	            ),
+	            React.createElement(
+	                'span',
+	                null,
+	                '+'
+	            ),
+	            React.createElement(
+	                'span',
+	                { onClick: this.props.unselectNumber, className: 'elements no-margin-left' },
+	                (this.props.questionNumbers[1], selectedNumber)
+	            ),
+	            React.createElement(
+	                'span',
+	                null,
+	                'x'
+	            ),
+	            React.createElement(
+	                'span',
+	                null,
+	                this.props.questionNumbers[2]
+	            ),
+	            React.createElement(
+	                'span',
+	                null,
+	                '='
+	            ),
+	            React.createElement(
+	                'span',
+	                null,
+	                this.props.total
+	            )
 	        );
 	    }
 	});
@@ -101,29 +180,22 @@
 	    displayName: 'AnswerFrame',
 
 	    render: function () {
+	        var numbers = [],
+	            className,
+	            selectNumber = this.props.selectNumber,
+	            selectedNumber = this.props.selectedNumber;
+	        for (var i = 0; i <= 3; i++) {
+	            className = 'elements selected-' + (selectedNumber === i);
+	            numbers.push(React.createElement(
+	                'div',
+	                { className: className, onClick: selectNumber.bind(null, i) },
+	                i
+	            ));
+	        }
 	        return React.createElement(
 	            'div',
 	            { className: 'answer' },
-	            React.createElement(
-	                'span',
-	                { className: 'elements' },
-	                '3'
-	            ),
-	            React.createElement(
-	                'span',
-	                { className: 'elements' },
-	                '4'
-	            ),
-	            React.createElement(
-	                'span',
-	                { className: 'elements' },
-	                '7'
-	            ),
-	            React.createElement(
-	                'span',
-	                { className: 'elements' },
-	                '1'
-	            )
+	            numbers
 	        );
 	    }
 	});
@@ -19790,7 +19862,7 @@
 
 
 	// module
-	exports.push([module.id, "#app {\n  width: 600px;\n  height: 400px;\n  background-color: #E9EAED;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 100px auto;\n  padding: 40px; }\n\n.question, .answer {\n  width: 425px;\n  height: 150px;\n  line-height: 150px;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 43px;\n  font-weight: bold;\n  font-family: cursive, sans-serif;\n  background: #E5F0FF;\n  text-align: center;\n  float: left; }\n\n.answer {\n  clear: both;\n  margin-top: 40px;\n  margin-bottom: 50px;\n  height: 100px;\n  text-align: inherit;\n  line-height: 100px; }\n\n.timeAndScore {\n  width: 140px;\n  height: 150px;\n  margin-left: 30px;\n  float: left; }\n\n.time, .score {\n  width: 140px;\n  height: 70px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  line-height: 70px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  background: #9EC5D3;\n  color: #7F553F;\n  margin: 0px 7px 12px 0px; }\n\n.check {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 40px 0px 50px 30px;\n  height: 100px;\n  line-height: 100px;\n  float: left; }\n  .check:hover {\n    background: #577dcb; }\n  .check:active {\n    background: #2f436d; }\n\n.start {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  height: 50px;\n  line-height: 50px;\n  clear: both;\n  margin: auto; }\n  .start:hover {\n    background: #577dcb; }\n  .start:active {\n    background: #2f436d; }\n\n.elements {\n  padding: 0px 15px;\n  background: lightgrey;\n  width: 50px;\n  margin-left: 40px;\n  border-radius: 50%;\n  cursor: pointer; }\n  .elements:hover {\n    background: #949494; }\n  .elements:active {\n    background: #bebebe;\n    color: white; }\n", ""]);
+	exports.push([module.id, "#app {\n  width: 600px;\n  height: 400px;\n  background-color: #E9EAED;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 100px auto;\n  padding: 40px; }\n\n.question, .answer {\n  width: 425px;\n  height: 150px;\n  line-height: 57px;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 43px;\n  font-weight: bold;\n  font-family: cursive, sans-serif;\n  background: #E5F0FF;\n  margin-bottom: 30px;\n  text-align: center;\n  float: left; }\n\n.answer {\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  clear: both;\n  margin-top: 40px;\n  margin-bottom: 50px;\n  height: 100px;\n  text-align: inherit; }\n\n.timeAndScore {\n  width: 140px;\n  height: 150px;\n  margin-left: 30px;\n  float: left; }\n\n.time, .score {\n  width: 140px;\n  height: 70px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  line-height: 70px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  background: #9EC5D3;\n  color: #7F553F;\n  margin: 0px 7px 12px 0px; }\n\n.check {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 40px 0px 50px 30px;\n  height: 100px;\n  line-height: 100px;\n  float: left; }\n  .check:hover {\n    background: #577dcb; }\n  .check:active {\n    background: #2f436d; }\n\n.start {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  height: 50px;\n  line-height: 50px;\n  clear: both;\n  margin: auto; }\n  .start:hover {\n    background: #577dcb; }\n  .start:active {\n    background: #2f436d; }\n\n.elements, .no-margin-left {\n  margin: 20px 0px 0px 36px;\n  display: inline-block;\n  text-align: center;\n  background: #E9EAED;\n  width: 57px;\n  cursor: pointer;\n  border-radius: 50%;\n  border: 1px solid #43609C; }\n  .elements:active, .no-margin-left:active {\n    background: #d2d3d5;\n    color: white; }\n\n.selected-true {\n  background: #F6F7F8;\n  color: #FCEFE0; }\n\n.no-margin-left {\n  margin: 45px 0px; }\n", ""]);
 
 	// exports
 
