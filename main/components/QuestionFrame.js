@@ -1,5 +1,4 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 
 var QuestionFrame = React.createClass({
     render: function() {
@@ -9,7 +8,7 @@ var QuestionFrame = React.createClass({
                 <span>{this.props.questionNumbers[0]}</span>
                 <span>+</span>
                 <span onClick={this.props.unselectNumber} className="elements no-margin-left">
-                    {this.props.questionNumbers[1], selectedNumber}        
+                    {selectedNumber}        
                 </span>
                 <span>x</span>
                 <span>{this.props.questionNumbers[2]}</span>
