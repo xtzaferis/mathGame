@@ -20,7 +20,6 @@
   font-size: $windowsFrameFontSize;
   font-weight: bold;
   font-family: cursive, sans-serif;
-
   background: #E5F0FF;
 }
 
@@ -60,21 +59,23 @@
 .question {
   width: $windowsFrameWidth;
   height: $windowsFrameHeight;
-  line-height: $windowsFrameHeight;
+  line-height: 57px;
   @include border-radius(15px);
   @include windowsForm;
-  text-align: center;
+    margin-bottom: 30px;
+  text-align: center;    
   float:left;
 }
 
 .answer {
-  @extend .question;
+@include border-radius(15px);
+    @extend .question;
   clear: both;
   margin-top: 40px;
   margin-bottom: 50px;
   height: $windowsFrameHeight - 50;
   text-align: inherit;
-  line-height: 100px;
+
 }
 
 .timeAndScore {
@@ -116,17 +117,27 @@
 }
 
 .elements {
-  padding: 0px 15px;
+    margin: 20px 0px 0px 36px;
+    display: inline-block;
+    text-align: center;
   background: $elementBackground;
-  &:hover {
-    background: $elementBackground * 0.7;
-  }
-  &:active {
+  &:active, {
     background: $elementBackground * 0.9;
     color: white;
   }
-  width: 50px;
-  margin-left: 40px;
-  border-radius: 50%;
+  width: 57px;
   cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid $buttonBackground;
+
+}
+
+.selected-true {
+        background: $selectedNumBackground;
+        color: $selectedNumColor;
+    }
+
+.no-margin-left {
+    @extend .elements;
+    margin: 45px 0px;
 }

@@ -6,7 +6,9 @@ $timeScoreBackground: #9EC5D3;
 $timeScoreColor: #7F553F;
 $questionAnswerBackground: #E5F0FF;
 $questionAnswerColor: #000;
-$elementBackground: lightgrey;
+$elementBackground: $mainBackground;
+$selectedNumBackground: #F6F7F8; 
+$selectedNumColor: #FCEFE0;
 
 //------Sizes-------
 $mainWidth: 600px;
