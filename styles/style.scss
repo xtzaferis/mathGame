@@ -1,21 +1,8 @@
 @import "variables";
+@import "borderAndShadow";
+@import "borderRadius";
 
-@mixin border-radius($radius) {
-  -webkit-border-radius: $radius;
-  -moz-border-radius: $radius;
-  -ms-border-radius: $radius;
-  border-radius: $radius;
-}
-
-@mixin borderAndShadow() {
-  -webkit-box-shadow: 4px 4px 4px lightgrey;
-  -moz-box-shadow: 4px 4px 4px lightgrey;
-  -ms-box-shadow: 4px 4px 4px lightgrey;
-  box-shadow: 4px 4px 4px lightgrey;
-  border: solid 1px lightgrey;
-}
-
-@mixin windowsForm() {
+.windowsForm {
   @include borderAndShadow;
   font-size: $windowsFrameFontSize;
   font-weight: bold;
@@ -23,14 +10,14 @@
   background: #E5F0FF;
 }
 
-@mixin componentForm() {
+.componentForm {
   @include borderAndShadow;
   font-size: $componentFontSize;
   text-align: center;
   font-weight: bold;
 }
 
-@mixin buttonForm() {
+.buttonForm {
   font-size: 22px;
   text-align: center;
   font-weight: bold;
@@ -61,15 +48,15 @@
   height: $windowsFrameHeight;
   line-height: 57px;
   @include border-radius(15px);
-  @include windowsForm;
-    margin-bottom: 30px;
-  text-align: center;    
+  @extend .windowsForm;
+  margin-bottom: 30px;
+  text-align: center;
   float:left;
 }
 
 .answer {
-@include border-radius(15px);
-    @extend .question;
+  @include border-radius(15px);
+  @extend .question;
   clear: both;
   margin-top: 40px;
   margin-bottom: 50px;
@@ -90,14 +77,14 @@
   height: $componentHeight + 20;
   @include border-radius(10px);
   line-height: $componentHeight + 20;
-  @include componentForm;
+  @extend .componentForm;
   background: $timeScoreBackground;
   color: $timeScoreColor;
   margin: 0px 7px 12px 0px;
 }
 
 .check {
-  @include buttonForm;
+  @extend .buttonForm;
   @include border-radius(10px);
   @include borderAndShadow;
   margin: 40px 0px 50px 30px;
@@ -107,7 +94,7 @@
 }
 
 .start {
-  @include buttonForm;
+  @extend .buttonForm;
   @include border-radius(10px);
   @include borderAndShadow;
   height: $componentHeight;
@@ -117,9 +104,9 @@
 }
 
 .elements {
-    margin: 20px 0px 0px 36px;
-    display: inline-block;
-    text-align: center;
+  margin: 20px 0px 0px 36px;
+  display: inline-block;
+  text-align: center;
   background: $elementBackground;
   &:active, {
     background: $elementBackground * 0.9;
@@ -127,17 +114,34 @@
   }
   width: 57px;
   cursor: pointer;
-    border-radius: 50%;
-    border: 1px solid $buttonBackground;
+  border-radius: 50%;
+  border: 1px solid $buttonBackground;
 
 }
 
 .selected-true {
-        background: $selectedNumBackground;
-        color: $selectedNumColor;
-    }
+  background: $selectedNumBackground;
+  color: $selectedNumColor;
+}
 
 .no-margin-left {
-    @extend .elements;
-    margin: 45px 0px;
+  @extend .elements;
+  margin: 45px 0px;
+}
+
+.right {
+  @extend .check;
+  background: $rightAnswerBackground;
+  &:hover {
+    background: $rightAnswerBackground;
+  }
+}
+
+.fail {
+  @extend .check;
+  background: $failAnswerBackground;
+  &:hover {
+    background: $failAnswerBackground;
+  }
+
 }
