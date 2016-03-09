@@ -1,15 +1,18 @@
 var React = require('react');
 
+// here we can handle time and score
 var TimeScoreFrame = React.createClass({
     render: function() {
-        var time = this.props.timeRemaining;
+        var timeRemaining = this.props.timeRemaining,
+            score = this.props.score;
+
         return (
             <div className="timeAndScore">
                 <div className="time">
-                    Time: <span>{time}</span>
+                    Time: <span>{timeRemaining}</span>
                 </div>
                 <div className="score">
-                    Score: <span>0</span>
+                    Score: <span>{score}</span>
                 </div>
             </div>
         )

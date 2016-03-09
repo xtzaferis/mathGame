@@ -1,7 +1,7 @@
 
 // ---pending autoprefixer-loader------
 
-@mixin borderAndShadow() {
+.borderAndShadow {
   -webkit-box-shadow: 4px 4px 4px lightgrey;
   -moz-box-shadow: 4px 4px 4px lightgrey;
   -ms-box-shadow: 4px 4px 4px lightgrey;

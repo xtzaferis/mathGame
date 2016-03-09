@@ -70,16 +70,29 @@
 
 	var _StartFrame2 = _interopRequireDefault(_StartFrame);
 
+	var _NextFrame = __webpack_require__(167);
+
+	var _NextFrame2 = _interopRequireDefault(_NextFrame);
+
+	var _CentralMessage = __webpack_require__(168);
+
+	var _CentralMessage2 = _interopRequireDefault(_CentralMessage);
+
+	var _SetIntervalMixin = __webpack_require__(169);
+
+	var _SetIntervalMixin2 = _interopRequireDefault(_SetIntervalMixin);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var React = __webpack_require__(3);
-	var ReactDOM = __webpack_require__(167);
+	var ReactDOM = __webpack_require__(170);
 
-	__webpack_require__(168);
+	__webpack_require__(171);
 
 	var Main = React.createClass({
 	    displayName: 'Main',
 
+	    mixins: [_SetIntervalMixin2.default],
 	    getInitialState: function getInitialState() {
 
 	        var questionNumbers = this.generateQuestionTable(3),
@@ -93,10 +106,30 @@
 	            correctAnswer: questionNumbers[1],
 	            checkClassName: "check",
 	            messageToUser: "Check",
+	            score: 0,
 	            selectedNumber: "...",
 	            timeRemaining: 60,
+	            startResetText: "Start",
+	            nextButtonVisibility: "next invisible",
+	            windowsDisplay: " visible",
 	            playing: false
 	        };
+	    },
+	    // Here is where I put the interval for the game countdown
+	    componentDidMount: function componentDidMount() {
+	        this.timing = setInterval(this.countDown, 1000);
+	    },
+	    countDown: function countDown() {
+	        this.setState({ timeRemaining: this.state.timeRemaining - 1 });
+	        // If the time expires then the interval are cleared
+	        if (this.state.timeRemaining == 0) {
+	            this.componentWillUnmount();
+	        }
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        clearInterval(this.timing);
+	        // When the time is over the button must be set to Start
+	        this.setState({ startResetText: "Start" });
 	    },
 	    generateQuestionTable: function generateQuestionTable(size) {
 	        var table = [],
@@ -118,17 +151,22 @@
 	        var num1_9 = Math.floor(Math.random() * 9) + 1;
 	        var num0_3 = Math.floor(Math.random() * 4);
 
+	        //First element in the table is the correct answer
 	        answerNumbers.push(questionTable[1]);
-
+	        // Pushing in the table 3 different numbers from 1 to 9
 	        for (var i = 0; i < size - 1; i++) {
 	            while (answerNumbers.indexOf(num1_9) >= 0) {
 	                num1_9 = Math.floor(Math.random() * 9) + 1;
 	            }
 	            answerNumbers.push(num1_9);
 	        }
+	        // Taking the correct answer out of the table
+	        //the result is also a table with one element
+	        // setting back the correct answer, transforming it
+	        // first to an integer, in a random index from 0 to 3
 	        var spliceCorrect = answerNumbers.splice(0, 1);
-	        answerNumbers.splice(num0_3, 0, spliceCorrect[0]);
 
+	        answerNumbers.splice(num0_3, 0, spliceCorrect[0]);
 	        return answerNumbers;
 	    },
 	    selectNumber: function selectNumber(clickedNumber) {
@@ -149,18 +187,39 @@
 	        });
 	    },
 	    checkAnswer: function checkAnswer() {
-	        var correct = this.state.selectedNumber === this.state.correctAnswer;
-	        var className;
-	        var messageToUser;
+	        var usersChoice = this.state.selectedNumber,
+	            correct,
+	            className,
+	            messageToUser,
+	            score = this.state.score,
+	            nextButtonVisibility = this.state.nextButtonVisibility,
+	            windowsDisplay = this.state.windowsDisplay;
 
+	        //Checking for true or false answer
+	        if (usersChoice !== "...") {
+	            correct = usersChoice === this.state.correctAnswer;
+	        } else {
+	            correct = "notSelected";
+	        }
+
+	        if (correct !== "notSelected" && correct == true) {
+	            score++;
+	        }
 	        switch (correct) {
 	            case true:
 	                className = "right";
 	                messageToUser = "Correct";
+	                this.setState({ selectedNumber: "..." });
+	                nextButtonVisibility = "next visible";
+	                windowsDisplay = " invisible";
 	                break;
 	            case false:
 	                className = "fail";
-	                messageToUser = "Fail";
+	                messageToUser = "Try Again";
+	                break;
+	            case "notSelected":
+	                className = "check";
+	                messageToUser = "Check";
 	                break;
 	            default:
 	                className = "check";
@@ -169,33 +228,94 @@
 
 	        this.setState({
 	            checkClassName: className,
-	            messageToUser: messageToUser
+	            messageToUser: messageToUser,
+	            nextButtonVisibility: nextButtonVisibility,
+	            windowsDisplay: windowsDisplay,
+	            score: score
 	        });
 	    },
 	    onStartClick: function onStartClick() {
-	        this.setInterval(function () {
-	            this.setState({ timeRemaining: this.state.timeRemaining - 1 });
-	        }, 1000);
+	        //starts the countdown - interval
+	        this.componentWillUnmount();
+	        this.resetTimeAndScore();
+	        this.resetComponents();
+	        this.componentDidMount(); // clear the interval
+	    },
+	    resetTimeAndScore: function resetTimeAndScore() {
+	        this.setState({
+	            score: 0,
+	            timeRemaining: 60
+	        });
+	    },
+	    // Generating new question and answer and resets the components
+	    resetComponents: function resetComponents() {
+	        var questionNumbers = this.generateQuestionTable(3),
+	            answerNumbers = this.generateAnswersTable(4, questionNumbers),
+	            result = this.calculateResult(questionNumbers);
+
+	        this.setState({
+	            questionNumbers: questionNumbers,
+	            answerNumbers: answerNumbers,
+	            result: result,
+	            correctAnswer: questionNumbers[1],
+	            selectedNumber: "...",
+	            nextButtonVisibility: "next invisible",
+	            checkClassName: "check",
+	            windowsDisplay: " visible",
+	            startResetText: "Reset",
+	            playing: true,
+	            messageToUser: "Check"
+	        });
+	    },
+	    onNextClick: function onNextClick() {
+	        var visibility = "next invisible";
+	        this.resetComponents(); // except score and time
+	        this.setState({
+	            nextButtonVisibility: visibility,
+	            windowsDisplay: " visible" // makes the question and answer frames visible
+	        });
 	    },
 
 	    render: function render() {
-	        return React.createElement(
-	            'div',
-	            null,
-	            React.createElement(_QuestionFrame2.default, { selectedNumber: this.state.selectedNumber,
-	                unselectNumber: this.unselectNumber,
-	                questionNumbers: this.state.questionNumbers,
-	                total: this.state.result }),
-	            React.createElement(_TimeScoreFrame2.default, { timeRemaining: this.state.timeRemaining }),
-	            React.createElement(_AnswerFrame2.default, { selectedNumber: this.state.selectedNumber,
-	                selectNumber: this.selectNumber,
-	                answerNumbers: this.state.answerNumbers }),
-	            React.createElement(_CheckFrame2.default, { selectedNumber: this.state.selectedNumber,
-	                checkAnswer: this.checkAnswer,
-	                messageToUser: this.state.messageToUser,
-	                checkClassName: this.state.checkClassName }),
-	            React.createElement(_StartFrame2.default, { startClick: this.onStartClick })
-	        );
+	        var st = this.state;
+
+	        // if the user is playing and the time is not over
+	        if (st.playing == true && st.timeRemaining != 0) {
+	            return React.createElement(
+	                'div',
+	                null,
+	                React.createElement(_QuestionFrame2.default, { selectedNumber: st.selectedNumber,
+	                    unselectNumber: this.unselectNumber,
+	                    questionNumbers: st.questionNumbers,
+	                    display: st.windowsDisplay,
+	                    total: st.result }),
+	                React.createElement(_TimeScoreFrame2.default, { timeRemaining: st.timeRemaining,
+	                    score: st.score }),
+	                React.createElement(_AnswerFrame2.default, { selectedNumber: st.selectedNumber,
+	                    selectNumber: this.selectNumber,
+	                    answerNumbers: st.answerNumbers,
+	                    visibility: st.windowsDisplay }),
+	                React.createElement(_CheckFrame2.default, { selectedNumber: st.selectedNumber,
+	                    checkAnswer: this.checkAnswer,
+	                    messageToUser: st.messageToUser,
+	                    checkClassName: st.checkClassName }),
+	                React.createElement(_StartFrame2.default, { startClick: this.onStartClick,
+	                    startResetText: st.startResetText }),
+	                React.createElement(_NextFrame2.default, { nextClick: this.onNextClick,
+	                    visibility: st.nextButtonVisibility })
+	            );
+	        } else {
+	            // time is over or the user is not playing, loading for first time
+	            return React.createElement(
+	                'div',
+	                null,
+	                React.createElement(_CentralMessage2.default, { centralMessageDisplay: st.centralMessageDisplay,
+	                    score: this.state.score,
+	                    playing: this.state.playing }),
+	                React.createElement(_StartFrame2.default, { startClick: this.onStartClick,
+	                    startResetText: st.startResetText })
+	            );
+	        }
 	    }
 	});
 
@@ -19984,49 +20104,54 @@
 	"use strict";
 
 	var React = __webpack_require__(3);
-
+	// Formating the question to the user using the question table
 	var QuestionFrame = React.createClass({
 	    displayName: "QuestionFrame",
 
 	    render: function render() {
 	        var selectedNumber = this.props.selectedNumber;
+	        var display = this.props.display; // visible or not
 	        return React.createElement(
 	            "div",
 	            { className: "question" },
 	            React.createElement(
-	                "span",
-	                null,
-	                this.props.questionNumbers[0]
-	            ),
-	            React.createElement(
-	                "span",
-	                null,
-	                "+"
-	            ),
-	            React.createElement(
-	                "span",
-	                { onClick: this.props.unselectNumber, className: "elements no-margin-left" },
-	                selectedNumber
-	            ),
-	            React.createElement(
-	                "span",
-	                null,
-	                "x"
-	            ),
-	            React.createElement(
-	                "span",
-	                null,
-	                this.props.questionNumbers[2]
-	            ),
-	            React.createElement(
-	                "span",
-	                null,
-	                "="
-	            ),
-	            React.createElement(
-	                "span",
-	                null,
-	                this.props.total
+	                "div",
+	                { className: display },
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    this.props.questionNumbers[0]
+	                ),
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    "+"
+	                ),
+	                React.createElement(
+	                    "span",
+	                    { className: "elements centerTheContent", onClick: this.props.unselectNumber },
+	                    selectedNumber
+	                ),
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    "x"
+	                ),
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    this.props.questionNumbers[2]
+	                ),
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    "="
+	                ),
+	                React.createElement(
+	                    "span",
+	                    null,
+	                    this.props.total
+	                )
 	            )
 	        );
 	    }
@@ -20042,11 +20167,14 @@
 
 	var React = __webpack_require__(3);
 
+	// here we can handle time and score
 	var TimeScoreFrame = React.createClass({
 	    displayName: "TimeScoreFrame",
 
 	    render: function render() {
-	        var time = this.props.timeRemaining;
+	        var timeRemaining = this.props.timeRemaining,
+	            score = this.props.score;
+
 	        return React.createElement(
 	            "div",
 	            { className: "timeAndScore" },
@@ -20057,7 +20185,7 @@
 	                React.createElement(
 	                    "span",
 	                    null,
-	                    time
+	                    timeRemaining
 	                )
 	            ),
 	            React.createElement(
@@ -20067,7 +20195,7 @@
 	                React.createElement(
 	                    "span",
 	                    null,
-	                    "0"
+	                    score
 	                )
 	            )
 	        );
@@ -20092,9 +20220,13 @@
 	            answers = this.props.answerNumbers,
 	            className,
 	            selectNumber = this.props.selectNumber,
+	            visibility = this.props.visibility,
 	            selectedNumber = this.props.selectedNumber;
+
+	        // filling a table with the possible answers binding individual properties
+	        // used when closures
 	        for (var i = 0; i <= 3; i++) {
-	            className = 'elements selected-' + (selectedNumber == answers[i]);
+	            className = 'elements selected-' + (selectedNumber == answers[i]) + visibility;
 	            numbers.push(React.createElement(
 	                'div',
 	                { className: className,
@@ -20145,14 +20277,16 @@
 
 	var React = __webpack_require__(3);
 
+	// Start button with onClick function and text depending to the playing state
 	var StartFrame = React.createClass({
 	    displayName: "StartFrame",
 
 	    render: function render() {
+	        var startResetText = this.props.startResetText;
 	        return React.createElement(
 	            "div",
 	            { className: "start", onClick: this.props.startClick },
-	            "Start"
+	            startResetText
 	        );
 	    }
 	});
@@ -20165,20 +20299,142 @@
 
 	'use strict';
 
-	module.exports = __webpack_require__(5);
+	var React = __webpack_require__(3);
 
+	// Next button with visibility and onClick
+	var NextFrame = React.createClass({
+	    displayName: 'NextFrame',
+
+	    render: function render() {
+	        var visibility = this.props.visibility;
+	        return React.createElement(
+	            'div',
+	            { className: visibility, onClick: this.props.nextClick },
+	            'Next'
+	        );
+	    }
+	});
+
+	module.exports = NextFrame;
 
 /***/ },
 /* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	var React = __webpack_require__(3);
+
+	var CentralMessage = React.createClass({
+	    displayName: "CentralMessage",
+
+	    render: function render() {
+	        var playing = this.props.playing;
+	        var score = this.props.score;
+
+	        if (playing) {
+	            // if the user was playing and the time is over
+	            return React.createElement(
+	                "div",
+	                { className: "central" },
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    "Game Over"
+	                ),
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    "Correct answers:",
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        " ",
+	                        score
+	                    )
+	                ),
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    "Play again?"
+	                )
+	            );
+	        } else {
+	            // loading for the first time
+	            return React.createElement(
+	                "div",
+	                { className: "central" },
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    "Welcome"
+	                ),
+	                React.createElement(
+	                    "div",
+	                    null,
+	                    "Are you ready?"
+	                )
+	            );
+	        }
+	    }
+	});
+
+	module.exports = CentralMessage;
+
+/***/ },
+/* 169 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	// A module that helps for Countdown-setInterval
+	// We can use componentDidMount and componentWillUnmount
+	// for setInterval and clearInterval
+
+	var SetIntervalMixin = {
+	  componentWillMount: function componentWillMount() {
+	    this.intervals = [];
+	  },
+	  setInterval: function (_setInterval) {
+	    function setInterval() {
+	      return _setInterval.apply(this, arguments);
+	    }
+
+	    setInterval.toString = function () {
+	      return _setInterval.toString();
+	    };
+
+	    return setInterval;
+	  }(function () {
+	    this.intervals.push(setInterval.apply(null, arguments));
+	  }),
+	  componentWillUnmount: function componentWillUnmount() {
+	    this.intervals.forEach(clearInterval);
+	  }
+	};
+
+	module.exports = SetIntervalMixin;
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(5);
+
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(169);
+	var content = __webpack_require__(172);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(171)(content, {});
+	var update = __webpack_require__(174)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -20195,21 +20451,21 @@
 	}
 
 /***/ },
-/* 169 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(170)();
+	exports = module.exports = __webpack_require__(173)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".windowsForm, .question, .answer {\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 43px;\n  font-weight: bold;\n  font-family: cursive, sans-serif;\n  background: #E5F0FF; }\n\n.componentForm, .time, .score {\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold; }\n\n.buttonForm, .check, .right, .fail, .start {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer; }\n  .buttonForm:hover, .check:hover, .right:hover, .fail:hover, .start:hover {\n    background: #577dcb; }\n  .buttonForm:active, .check:active, .right:active, .fail:active, .start:active {\n    background: #2f436d; }\n\n#app {\n  width: 600px;\n  height: 400px;\n  background-color: #E9EAED;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 100px auto;\n  padding: 40px; }\n\n.question, .answer {\n  width: 425px;\n  height: 150px;\n  line-height: 57px;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  margin-bottom: 30px;\n  text-align: center;\n  float: left; }\n\n.answer {\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  clear: both;\n  margin-top: 40px;\n  margin-bottom: 50px;\n  height: 100px;\n  text-align: inherit; }\n\n.timeAndScore {\n  width: 140px;\n  height: 150px;\n  margin-left: 30px;\n  float: left; }\n\n.time, .score {\n  width: 140px;\n  height: 70px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  line-height: 70px;\n  background: #9EC5D3;\n  color: #7F553F;\n  margin: 0px 7px 12px 0px; }\n\n.check, .right, .fail {\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  margin: 40px 0px 50px 30px;\n  height: 100px;\n  line-height: 100px;\n  float: left; }\n\n.start {\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey;\n  height: 50px;\n  line-height: 50px;\n  clear: both;\n  margin: auto; }\n\n.elements, .no-margin-left {\n  margin: 20px 0px 0px 36px;\n  display: inline-block;\n  text-align: center;\n  background: #E9EAED;\n  width: 57px;\n  cursor: pointer;\n  border-radius: 50%;\n  border: 1px solid #43609C; }\n  .elements:active, .no-margin-left:active {\n    background: #d2d3d5;\n    color: white; }\n\n.selected-true {\n  background: #F6F7F8;\n  color: #FCEFE0; }\n\n.no-margin-left {\n  margin: 45px 0px; }\n\n.right {\n  background: #4CAF50; }\n  .right:hover {\n    background: #4CAF50; }\n\n.fail {\n  background: #E62117; }\n  .fail:hover {\n    background: #E62117; }\n", ""]);
+	exports.push([module.id, ".borderAndShadow, .windowsForm, .central, .question, .answer, .componentForm, .time, .score, #app, .check, .right, .fail, .start, .next {\n  -webkit-box-shadow: 4px 4px 4px lightgrey;\n  -moz-box-shadow: 4px 4px 4px lightgrey;\n  -ms-box-shadow: 4px 4px 4px lightgrey;\n  box-shadow: 4px 4px 4px lightgrey;\n  border: solid 1px lightgrey; }\n\n.windowsForm, .central, .question, .answer {\n  font-size: 43px;\n  font-weight: bold;\n  font-family: cursive, sans-serif;\n  background: #E5F0FF; }\n\n.componentForm, .time, .score {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold; }\n\n.buttonForm, .check, .right, .fail, .start, .next {\n  font-size: 22px;\n  text-align: center;\n  font-weight: bold;\n  width: 140px;\n  background: #43609C;\n  color: azure;\n  cursor: pointer; }\n  .buttonForm:hover, .check:hover, .right:hover, .fail:hover, .start:hover, .next:hover {\n    background: #577dcb; }\n  .buttonForm:active, .check:active, .right:active, .fail:active, .start:active, .next:active {\n    background: #2f436d; }\n\n#app {\n  width: 600px;\n  height: 420px;\n  background-color: #E9EAED;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  margin: 100px auto;\n  padding: 40px; }\n\n.central {\n  clear: both;\n  height: 202px;\n  text-align: center;\n  padding: 60px;\n  margin-bottom: 50px; }\n\n.question, .answer {\n  width: 425px;\n  height: 150px;\n  line-height: 57px;\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  margin-bottom: 30px;\n  text-align: center;\n  float: left; }\n\n.answer {\n  -webkit-border-radius: 15px;\n  -moz-border-radius: 15px;\n  -ms-border-radius: 15px;\n  border-radius: 15px;\n  clear: both;\n  margin-top: 40px;\n  margin-bottom: 50px;\n  height: 100px;\n  text-align: inherit; }\n\n.timeAndScore {\n  width: 140px;\n  height: 150px;\n  margin-left: 30px;\n  float: left; }\n\n.time, .score {\n  width: 140px;\n  height: 70px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  line-height: 70px;\n  background: #9EC5D3;\n  color: #7F553F;\n  margin: 0px 7px 12px 0px; }\n\n.check, .right, .fail {\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  margin: 40px 0px 50px 30px;\n  height: 100px;\n  line-height: 100px;\n  float: left; }\n\n.start, .next {\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  -ms-border-radius: 10px;\n  border-radius: 10px;\n  height: 50px;\n  line-height: 50px;\n  margin-left: 220px;\n  float: left;\n  clear: left; }\n\n.next {\n  float: right;\n  clear: right;\n  margin-left: 0px; }\n\n.elements, .centerTheContent {\n  margin: 20px 0px 0px 36px;\n  display: inline-block;\n  text-align: center;\n  background: #E9EAED;\n  width: 57px;\n  cursor: pointer;\n  border-radius: 50%;\n  border: 1px solid #43609C; }\n  .elements:active, .centerTheContent:active {\n    background: #d2d3d5;\n    color: white; }\n\n.selected-true {\n  background: #F6F7F8;\n  color: #FCEFE0; }\n\n.invisible {\n  visibility: hidden; }\n\n.visible {\n  visibility: visible; }\n\n.notDisplayed {\n  display: none; }\n\n.displayed {\n  display: block; }\n\n.centerTheContent {\n  margin: 45px 0px; }\n\n.right {\n  background: #4CAF50; }\n  .right:hover {\n    background: #4CAF50; }\n\n.fail {\n  background: #BD0000; }\n  .fail:hover {\n    background: #BD0000; }\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 170 */
+/* 173 */
 /***/ function(module, exports) {
 
 	/*
@@ -20265,7 +20521,7 @@
 
 
 /***/ },
-/* 171 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
