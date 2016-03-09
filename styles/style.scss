@@ -3,7 +3,7 @@
 @import "borderRadius";
 
 .windowsForm {
-  @include borderAndShadow;
+  @extend .borderAndShadow;
   font-size: $windowsFrameFontSize;
   font-weight: bold;
   font-family: cursive, sans-serif;
@@ -11,7 +11,7 @@
 }
 
 .componentForm {
-  @include borderAndShadow;
+  @extend .borderAndShadow;
   font-size: $componentFontSize;
   text-align: center;
   font-weight: bold;
@@ -38,9 +38,18 @@
   height: $mainHeight;
   background-color: $mainBackground;
   @include border-radius(15px);
-  @include borderAndShadow;
+  @extend .borderAndShadow;
   margin: 100px auto;
   padding: 40px;
+}
+
+.central {
+  clear: both;
+  @extend .windowsForm;
+  height: 202px;
+  text-align: center;
+  padding: 60px;
+  margin-bottom: 50px;
 }
 
 .question {
@@ -62,7 +71,6 @@
   margin-bottom: 50px;
   height: $windowsFrameHeight - 50;
   text-align: inherit;
-
 }
 
 .timeAndScore {
@@ -86,7 +94,7 @@
 .check {
   @extend .buttonForm;
   @include border-radius(10px);
-  @include borderAndShadow;
+  @extend .borderAndShadow;
   margin: 40px 0px 50px 30px;
   height: $windowsFrameHeight - 50;
   line-height: $windowsFrameHeight - 50;
@@ -96,13 +104,21 @@
 .start {
   @extend .buttonForm;
   @include border-radius(10px);
-  @include borderAndShadow;
+  @extend .borderAndShadow;
   height: $componentHeight;
   line-height: $componentHeight;
-  clear: both;
-  margin: auto;
+  margin-left: 220px;
+  float: left;
+  clear: left;
+
 }
 
+.next {
+  @extend .start;
+  float: right;
+  clear: right;
+  margin-left: 0px;
+}
 .elements {
   margin: 20px 0px 0px 36px;
   display: inline-block;
@@ -124,7 +140,23 @@
   color: $selectedNumColor;
 }
 
-.no-margin-left {
+.invisible {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.notDisplayed {
+  display: none;
+}
+
+.displayed {
+  display: block;
+}
+
+.centerTheContent {
   @extend .elements;
   margin: 45px 0px;
 }

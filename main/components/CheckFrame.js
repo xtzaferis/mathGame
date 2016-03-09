@@ -7,7 +7,7 @@ var CheckFrame = React.createClass({
 
         return (
             <div className={className} onClick={this.props.checkAnswer}>
-                {messageToUser}
+                {messageToUser} 
             </div>
         )
     }
