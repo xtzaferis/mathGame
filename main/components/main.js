@@ -37,7 +37,7 @@ var Main = React.createClass({
             playing: false
         }
     },
-    // Here is where I put the interval for the game countdown
+    // Here is where I put the interval for the game count
     componentDidMount: function() {
         this.timing = setInterval(this.countDown, 1000);
     },
