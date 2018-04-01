@@ -6,7 +6,7 @@ var Main = React.createClass({
     render: function() {
         return (
             <div className="style">
-                Testing the environment_some changes
+                Testing the environment with some changes
             </div>
         )
     }
